@@ -16,7 +16,8 @@ export class HomeComponent implements OnInit {
   users: any;
 
   ngOnInit(): void {
-    this.getUsers();
+    //this.getUsers();
+    
   }
 
   registerToggle() {

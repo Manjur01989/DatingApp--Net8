@@ -9,11 +9,9 @@ import { map } from 'rxjs';
 export class AccountService {
   private http = inject(HttpClient);
   baseUrl = 'https://localhost:7193/api/';
-  //http://localhost:5118/api/
-
   currentUser = signal<User | null>(null);
 
-  login(model: any) {
+  login(model: User) {
     return this.http.post<User>(this.baseUrl + 'account/login', model).pipe(
       map(user => {
         if(user){
@@ -24,7 +22,7 @@ export class AccountService {
     );
   }
 
-  register(model: any) {
+  register(model: User) {
     return this.http.post<User>(this.baseUrl + 'account/register', model).pipe(
       map(user => {
         if(user){
@@ -38,7 +36,7 @@ export class AccountService {
   }
 
   logOut(){
-    localStorage.removeItem('user');
     this.currentUser.set(null);
+    localStorage.removeItem('user');
   }
 }
