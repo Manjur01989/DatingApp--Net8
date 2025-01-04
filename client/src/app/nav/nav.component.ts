@@ -9,29 +9,33 @@ import { TitleCasePipe } from '@angular/common';
 @Component({
   selector: 'app-nav',
   standalone: true,
-  imports: [FormsModule,BsDropdownModule,RouterLink,RouterLinkActive,TitleCasePipe],
+  imports: [FormsModule, BsDropdownModule, RouterLink, RouterLinkActive, TitleCasePipe],
   templateUrl: './nav.component.html',
   styleUrl: './nav.component.css'
 })
 export class NavComponent {
   model: any = {};
+  error: any;
   accountService = inject(AccountService);
   private toastr = inject(ToastrService);
   private route = inject(Router);
 
   login() {
     this.accountService.login(this.model).subscribe({
-      next : _ => {
+      next: _ => {
         this.route.navigateByUrl('/members');
       },
-      error : err=> {
-        this.toastr.error(err.error);
-        console.log(err);
-      }      
+      error: err => {
+        this.error = err;
+        //console.log(this.error);
+        for (let i = 0; i < this.error.length; i++) {
+          this.toastr.error(this.error[i]);
+        }
+      }
     })
   }
 
-  logout(){
+  logout() {
     this.accountService.logOut();
     this.route.navigateByUrl('/');
   }
