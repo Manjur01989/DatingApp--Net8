@@ -28,4 +28,8 @@ export class MembesService {
       })
     }
   }
+
+  updateMember(member: Member) {
+    return this.http.put<Member>(this.baseUrl + 'users', member);
+  }
 }
