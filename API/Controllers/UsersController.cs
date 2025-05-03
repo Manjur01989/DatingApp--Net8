@@ -1,19 +1,19 @@
 using System.Security.Claims;
-using API.Data;
 using API.DTOs;
 using API.Entities;
+using API.Extensions;
 using API.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers;
 
-   [Authorize]
-public class UsersController(IUserRepository userRepository, IMapper mapper) : BaseApiController
+[Authorize]
+public class UsersController(IUserRepository userRepository, IMapper mapper,
+IPhotoService photoService) : BaseApiController
 {
-    [HttpGet] 
+    [HttpGet]
     public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers()
     {
         var users = await userRepository.GetUsersAsync();
@@ -21,7 +21,7 @@ public class UsersController(IUserRepository userRepository, IMapper mapper) : B
         return Ok(usersToReturn);
     }
 
- 
+
     //[HttpGet("{id:int}")]
     [HttpGet("{username}")]
     public async Task<ActionResult<MemberDto>> GetUserByName(string username)
@@ -57,11 +57,9 @@ public class UsersController(IUserRepository userRepository, IMapper mapper) : B
     [HttpPut]
     public async Task<ActionResult> UpdateUser(MemberUpdateDto memberUpdateDto)
     {
-        //User.ClaimsIdentity; //User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        var username = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        //var claims = User.Claims.ToList();
-        if (username == null) return Unauthorized("User not found");
-        var user = await userRepository.GetUserByUsernameAsync(username);
+        // var username = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        // if (username == null) return Unauthorized("User not found");
+        var user = await userRepository.GetUserByUsernameAsync(User.GetUsername());
         if (user == null) return NotFound();
 
         mapper.Map(memberUpdateDto, user);
@@ -69,5 +67,35 @@ public class UsersController(IUserRepository userRepository, IMapper mapper) : B
         if (await userRepository.SaveAllAsync()) return NoContent();
 
         return BadRequest("Failed to update user");
+    }
+
+    [HttpPost("add-photo")]
+    public async Task<ActionResult<PhotoDto>> AddPhoto(IFormFile file)
+    {
+        var user = await userRepository.GetUserByUsernameAsync(User.GetUsername()!);
+        if (user == null) return BadRequest("User not found");
+
+        var result = await photoService.AddPhotoAsync(file);
+        if (result.Error != null) return BadRequest(result.Error.Message);
+
+        var photo = new Photo
+        {
+            Url = result.SecureUrl.AbsoluteUri,
+            PublicId = result.PublicId
+        };
+
+        //if (user.Photos.Count == 0) photo.IsMain = true;
+
+        user.Photos.Add(photo);
+
+        if (await userRepository.SaveAllAsync())
+        {
+            //return CreatedAtRoute("GetUser", new { username = user.UserName }, mapper.Map<PhotoDto>(photo));
+            return CreatedAtAction(nameof(GetUserByName),
+            new { username = user.UserName }, mapper.Map<PhotoDto>(photo));
+            //return mapper.Map<PhotoDto>(photo);
+        }
+
+        return BadRequest("Problem adding photo");
     }
 }
