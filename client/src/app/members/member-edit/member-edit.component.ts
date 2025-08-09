@@ -4,16 +4,18 @@ import { MembesService } from '../../_services/membes.service';
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { FormsModule, NgForm } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
+import { PhotoEditorComponent } from "../photo-editor/photo-editor.component";
+import { Member } from '../../_models/member';
 
 @Component({
   selector: 'app-member-edit',
   standalone: true,
-  imports: [TabsModule,FormsModule],
+  imports: [TabsModule, FormsModule, PhotoEditorComponent],
   templateUrl: './member-edit.component.html',
   styleUrl: './member-edit.component.css'
 })
 export class MemberEditComponent implements OnInit {
-  member: any = {};
+  member?: Member;
   private memberService = inject(MembesService);
   private accountService = inject(AccountService);
   private toast = inject(ToastrService);
@@ -38,7 +40,7 @@ export class MemberEditComponent implements OnInit {
   }
 
   updateMember() {
-    this.memberService.updateMember(this.member).subscribe({
+    this.memberService.updateMember(this.editForm?.value).subscribe({
       next: () => {
         this.toast.success('Profile updated successfully!');
         this.editForm?.reset(this.member);
@@ -49,5 +51,8 @@ export class MemberEditComponent implements OnInit {
       },
       complete: () => console.log('completed')
     });
+  }
+  onMemberChange(event: Member) {
+    this.member = event; 
   }
 }
