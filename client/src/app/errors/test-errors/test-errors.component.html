@@ -7,11 +7,12 @@
         Test 400 Validation Error</button>
 
 
-   @if(validationErrors.length>0){
+   <!-- @if(validationErrors.length>0){ -->
+    @if(validationErrors().length>0){
     <h1 class="mt-5">Test Errors</h1>
     <div class="alert alert-danger">
         <ul class="text-danger">
-            @for (error of validationErrors; track $index) {
+            @for (error of validationErrors(); track $index) {
                 <li>{{error}}</li>
             }
         </ul>

@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { environment } from '../../../environments/environment';
 
 @Component({
@@ -14,7 +14,8 @@ export class TestErrorsComponent {
   baseUrl = environment.apiUrl;
   private http = inject(HttpClient);
 
-  validationErrors : string[] = [];
+  //validationErrors : string[] = [];
+validationErrors = signal<string[]>([]);
 
   get400Error() {
     this.http.get(this.baseUrl + 'buggy/bad-request').subscribe({
@@ -24,28 +25,33 @@ export class TestErrorsComponent {
 
   get401Error() {
     this.http.get(this.baseUrl + 'buggy/auth').subscribe({
-      next: response => console.log(response),
-      error: error => console.log(error)
+      next: response => {
+        debugger;
+        console.log(response);}
+      ,
+      error: error => {debugger; console.log(error)}
   })}
 
   get404Error() {
     this.http.get(this.baseUrl + 'buggy/not-found').subscribe({
       next: response => console.log(response),
-      error: error => console.log(error)
+      error: error => {debugger; console.log(error)}
   })}
 
   get500Error() {
     this.http.get(this.baseUrl + 'buggy/server-error').subscribe({
       next: response => console.log(response),
-      error: error => console.log(error)
+      error: error => {debugger; console.log(error)}
   })}
 
   get400ValidationError() {
     this.http.post(this.baseUrl + 'account/register',{}).subscribe({
       next: response => console.log(response),
       error: error => {
+        debugger;
         console.log(error);
-        this.validationErrors = error;
+        //this.validationErrors = error;
+        this.validationErrors.set(error);
       }
   })}
 }

@@ -10,11 +10,12 @@ namespace API.Controllers
     [ApiController]
     public class BuggyController(DataContext context) : BaseApiController
     {
-        [Authorize]
+        //[Authorize]
         [HttpGet("auth")]
-        public ActionResult<string> GetAuth()
+        public IActionResult GetAuth()
         {
-            return "secret text";
+            //return "secret text";
+            return Unauthorized();
         }
 
         [HttpGet("not-found")]
