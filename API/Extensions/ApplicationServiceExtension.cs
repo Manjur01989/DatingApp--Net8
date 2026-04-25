@@ -12,7 +12,7 @@ public static class ApplicationServiceExtensions
     public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddControllers();
-        services.AddDbContext<DataContext>(opt =>
+        services.AddDbContext<AppDbContext>(opt =>
         {
             opt.UseSqlite(configuration.GetConnectionString("DefaultConnection"));
         });
@@ -21,7 +21,7 @@ public static class ApplicationServiceExtensions
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IPhotoService, PhotoService>();
         //services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
-        services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+        //services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         services.Configure<CloudinarySettings>(configuration.GetSection("CloudinarySettings"));
         return services;
     }

@@ -9,7 +9,7 @@ namespace API.Data
 
     public class Seed
     {
-        public static async Task SeedUsers(DataContext context)
+        public static async Task SeedUsers(AppDbContext context)
         {
             if (await context.Users.AnyAsync()) return;
 
@@ -23,9 +23,9 @@ namespace API.Data
             {
                 using var hmac = new HMACSHA512();
 
-                user.UserName = user.UserName.ToLower();
-                user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes("password"));
-                user.PasswordSalt = hmac.Key;
+                user.DisplayName = user.DisplayName.ToLower();
+                //user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes("password"));
+                //user.PasswordSalt = hmac.Key;
 
                 context.Users.Add(user);
             }

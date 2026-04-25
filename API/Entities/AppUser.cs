@@ -1,31 +1,9 @@
-using API.Extensions;
-
 namespace API.Entities;
 
 public class AppUser
 {
-    public int Id { get; set; }
-    public required string UserName { get; set; }
-    public byte[] PasswordHash { get; set; } = [];
+    public string Id { get; set; } = Guid.NewGuid().ToString();
+    public  required string DisplayName { get; set; }
+    public required string Email { get; set; }
 
-    public byte[] PasswordSalt { get; set; } = [];
-
-    public DateOnly DateOfBirth { get; set; }
-    //public string KnownAs { get; set; }
-
-    public string KnownAs { get; set; } = string.Empty;
-
-    public DateTime Created { get; set; } = DateTime.UtcNow;
-    public DateTime LastActive { get; set; } = DateTime.UtcNow;
-    public string Gender { get; set; } = string.Empty;
-    public string? Introduction { get; set; }
-    public string? Interests { get; set; }
-    public string? LookingFor { get; set; }
-    public string City { get; set; } = string.Empty;
-    public string Country { get; set; } = string.Empty;
-    public List<Photo> Photos { get; set; } = [];
-    // public int GetAge()
-    // {
-    //     return DateOfBirth.CalculateAge();
-    // }
 }
